@@ -2,6 +2,19 @@
 title: "julid24_OriginalHomeworkCode_04"
 author: "Julianna D."
 date: "`r Sys.Date()`"
-output: html_document
+output: 
+  html_document:
+    theme: cerulean 
+    toc: yes
+    toc_float: true
 ---
+# Problem 1
+Write a simple R function, Z.prop.test(), that can perform one or two sample Z-tests for proportion data using the following guidelines:  
+-- p1 and n1 (no default) representing the estimated proportion and sample size
+-- p2 and n2 (both defaulting to NULL) that contain a second sample's proportion and sample size data in the even of a two-sample test
+-- pO (no default) as the expected value for the population proportion
+-- alternative default "two.sided" and conf.level (default 0.95) used in the same way as in t.test()
 
+```{r}
+Z.prop.test <- function(p1, n1, p2=NULL, n2=NULL, p0, alternative="two.sided", conf.level=0.95)
+```
