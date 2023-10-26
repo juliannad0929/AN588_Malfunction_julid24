@@ -18,3 +18,80 @@ Write a simple R function, Z.prop.test(), that can perform one or two sample Z-t
 ```{r}
 Z.prop.test <- function(p1, n1, p2=NULL, n2=NULL, p0, alternative="two.sided", conf.level=0.95)
 ```
+
+```{r}
+Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
+  
+  # Check if the required arguments are provided
+  if (missing(p1) || missing(n1) || missing(p0)) {
+    stop("You must provide values for p1, n1, and p0.")
+  }
+  
+  # Check for the rules of thumb
+  if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {
+    warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")
+  }
+  
+  if (!is.null(p2) && !is.null(n2)) {
+    if (n2 * p2 < 5 || n2 * (1 - p2) < 5) {
+      warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied for the second sample.")
+    }
+  }
+  
+  # One-sample test
+  if (is.null(p2) || is.null(n2)) {
+    se <- sqrt(p0 * (1 - p0) / n1)
+    z <- (p1 - p0) / se
+    p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    
+    # Calculate symmetric confidence interval around p1
+    z_critical <- qnorm(1 - (1 - conf.level) / 2)
+    margin_error <- z_critical * se
+    ci_lower <- p1 - margin_error
+    ci_upper <- p1 + margin_error
+  }
+  
+  # Two-sample test
+  if (!is.null(p2) && !is.null(n2)) {
+    se1 <- sqrt(p1 * (1 - p1) / n1)
+    se2 <- sqrt(p2 * (1 - p2) / n2)
+    se_diff <- sqrt(se1^2 + se2^2)
+    
+    z <- ((p1 - p2) - 0) / se_diff
+    p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    
+    # Calculate symmetric confidence interval around p1 - p2
+    z_critical <- qnorm(1 - (1 - conf.level) / 2)
+    margin_error <- z_critical * se_diff
+    ci_lower <- (p1 - p2) - margin_error
+    ci_upper <- (p1 - p2) + margin_error
+  }
+  
+  # Determine the alternative hypothesis
+  if (alternative == "two.sided") {
+    alternative <- "two.sided"
+  } else if (alternative == "less") {
+    alternative <- "less"
+    p_value <- pnorm(z)
+  } else if (alternative == "greater") {
+    alternative <- "greater"
+    p_value <- 1 - pnorm(z)
+  } else {
+    stop("Invalid alternative hypothesis. Use 'two.sided', 'less', or 'greater'.")
+  }
+  
+  # Result summary
+  result <- list(
+    Z = z,
+    P = p_value,
+    CI = c(ci_lower, ci_upper),
+    method = "Z-test for Proportions",
+    alternative = alternative
+  )
+  
+  return(result)
+}
+```
+
+
+# Problem 2
