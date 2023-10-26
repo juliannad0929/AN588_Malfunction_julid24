@@ -100,3 +100,15 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
 
 
 # Problem 2
+```{r}
+attach(KamilarandCooperData)
+```
+
+Do the following for longevity~brain size and log(longevity)~log(brain size):  
+
+-- Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text()).
+-- ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
+-- Also find a 90% CI for the slope (β1) parameter.
+-- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
+-- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+-- Looking at your 2 models, which do you think is better? Why?
