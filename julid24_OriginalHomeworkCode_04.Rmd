@@ -27,12 +27,12 @@ Z.prop.test <- function(p1, n1, p2=NULL, n2=NULL, p0, alternative="two.sided", c
 ```{r}
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
   
-  # Check if the required arguments are provided
+  # Enter estimated proportion, sample size, and expected value for the population proportion
   if (missing(p1) || missing(n1) || missing(p0)) {
     stop("You must provide values for p1, n1, and p0.")
   }
   
-  # Check for the rules of thumb
+  # Rules of Thumb
   if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {
     warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")
   }
@@ -43,20 +43,20 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     }
   }
   
-  # One-sample test
+# One-sample test
   if (is.null(p2) || is.null(n2)) {
     se <- sqrt(p0 * (1 - p0) / n1)
     z <- (p1 - p0) / se
     p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
-    # Calculate symmetric confidence interval around p1
+# Calculate symmetric confidence interval around p1
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
     margin_error <- z_critical * se
     ci_lower <- p1 - margin_error
     ci_upper <- p1 + margin_error
   }
   
-  # Two-sample test
+# Two-sample test
   if (!is.null(p2) && !is.null(n2)) {
     se1 <- sqrt(p1 * (1 - p1) / n1)
     se2 <- sqrt(p2 * (1 - p2) / n2)
@@ -65,14 +65,14 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     z <- ((p1 - p2) - 0) / se_diff
     p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
-    # Calculate symmetric confidence interval around p1 - p2
+# Calculate symmetric confidence interval around p1 - p2
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
     margin_error <- z_critical * se_diff
     ci_lower <- (p1 - p2) - margin_error
     ci_upper <- (p1 - p2) + margin_error
   }
   
-  # Determine the alternative hypothesis
+# Alternative hypothesis
   if (alternative == "two.sided") {
     alternative <- "two.sided"
   } else if (alternative == "less") {
