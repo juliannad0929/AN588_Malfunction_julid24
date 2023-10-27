@@ -21,10 +21,6 @@ Write a simple R function, Z.prop.test(), that can perform one or two sample Z-t
 -- The function should return a list containing the members Z (the test statistic), P (the appropriate p value), and CI (the two-sided CI with respect to “conf.level” around p1 in the case of a one-sample test and around p2-p1 in the case of a two-sample test). For all test alternatives (“two.sided”, “greater”, “less”), calculate symmetric CIs based on quantiles of the normal distribution rather than worrying about calculating single-limit confidence bounds.
 
 ```{r}
-Z.prop.test <- function(p1, n1, p2=NULL, n2=NULL, p0, alternative="two.sided", conf.level=0.95)
-```
-
-```{r}
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
   
 # Enter estimated proportion, sample size, and expected value for the population proportion
@@ -39,7 +35,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
   
   if (!is.null(p2) && !is.null(n2)) {
     if (n2 * p2 < 5 || n2 * (1 - p2) < 5) {
-      warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied for the second sample.")
+      warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")
     }
   }
   
@@ -47,7 +43,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
   if (is.null(p2) || is.null(n2)) {
     se <- sqrt(p0 * (1 - p0) / n1)
     z <- (p1 - p0) / se
-    p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    pval <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
 # Confidence Interval around p1
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
@@ -63,7 +59,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     se_diff <- sqrt(se1^2 + se2^2)
     
     z <- ((p1 - p2) - 0) / se_diff
-    p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    pval <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
 # Confidence Interval around p1 - p2
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
@@ -77,10 +73,10 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     alternative <- "two.sided"
   } else if (alternative == "less") {
     alternative <- "less"
-    p_value <- pnorm(z)
+    pval <- pnorm(z)
   } else if (alternative == "greater") {
     alternative <- "greater"
-    p_value <- 1 - pnorm(z)
+    pval <- 1 - pnorm(z)
   } else {
     stop("Invalid alternative hypothesis. Use 'two.sided', 'less', or 'greater'.")
   }
@@ -88,7 +84,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
 # Results List
   result <- list(
     Z = z,
-    P = p_value,
+    P = pval,
     CI = c(ci_lower, ci_upper),
     method = "Z-test for Proportions",
     alternative = alternative
@@ -98,6 +94,12 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
 }
 ```
 
+```{r}
+# Test
+test1 <- Z.prop.test(p1=0.7, n1=100, p0=0.05)
+print(test1)
+```
+
 
 # Problem 2
 
@@ -105,6 +107,7 @@ I have the csv dataset saved to my desktop. Loading it in: File > Import Dataset
 ```{r}
 attach(KamilarandCooperData)
 kc <- KamilarandCooperData
+head(kc)
 kc
 ```
 
@@ -112,43 +115,61 @@ Using MaxLongevity_m and Brain_Size_Species_Mean
 
 Do the following for longevity~brain size and log(longevity)~log(brain size):  
 
+## Fitted Regression Model and Scatterplot
+
 1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
+
+### Longevity~Brain Size
 ```{r}
 # Referenced Module 12
 # Fitting the model for longevity~brain size
 lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
 summary (lb_model)
 
-# Scatterplot for longevity~brain size
+# Scatterplot of fitted model for longevity~brain size w/ fitted line 
 # Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
 library(ggplot2)
-p1 <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m, label=rownames(kc)))
-p1 <- p1 + geom_text(check_overlap=TRUE)
-p1 <- p1 + geom_smooth(method="lm", formula = y~x, col="green")
-p1
+
+scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "green") +  # Add the fitted line
+  geom_text(aes(label = paste("y =", round(coef(lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(lb_model)[MaxLongevity_m], 3))),
+            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
+  labs(title = "longevity~brain size Scatterplot w/ Fitted Line",
+       x = "Brain_Size_Species_Mean",
+       y = "MaxLongevity_m")
+print(scatter_plot)
 ```
 
+### log(Longevity)~log(Brain Size)
 ```{r}
 #Fitting the model for log(longevity)~log(brain size)
-# Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
 log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
 summary(log_lb_model)
 
-# Scatterplot for log(longevity)~log(brain size)
-p2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m), label=rownames(kc)))
-p2 <- p2 + geom_text(check_overlap=TRUE)
-p2 <- p2 + geom_smooth(method="lm", formula = y~x, col="red")
-p2
+# Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
+scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add the fitted line
+  geom_text(aes(label = paste("y =", round(coef(log_lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(log_lb_model)[MaxLongevity_m], 3))),
+            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
+  labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
+       x = "log(Brain_Size_Species_Mean)",
+       y = "log(MaxLongevity_m)")
+print(scatter_plot2)
 ```
+
 
 2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
 ```{r}
-# For longevity~brain size
-slope_est1 <- coef(lb_model)[Brain_Size_Species_Mean]
+# Fit the model
+lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
 
-# For log(longevity)~log(brain size)
-slope_est2 <- coef(log_lb_model)[Brain_Size_Species_Mean]
-slope_est2
+# Get the point estimate of the slope (β₁)
+slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
+
+# Print the point estimate
+print(slope_estimatecat)
 ```
 
 
