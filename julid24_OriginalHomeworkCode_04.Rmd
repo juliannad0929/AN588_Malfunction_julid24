@@ -27,12 +27,12 @@ Z.prop.test <- function(p1, n1, p2=NULL, n2=NULL, p0, alternative="two.sided", c
 ```{r}
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
   
-  # Enter estimated proportion, sample size, and expected value for the population proportion
+# Enter estimated proportion, sample size, and expected value for the population proportion
   if (missing(p1) || missing(n1) || missing(p0)) {
     stop("You must provide values for p1, n1, and p0.")
   }
   
-  # Rules of Thumb
+# Rules of Thumb
   if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {
     warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")
   }
@@ -49,7 +49,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     z <- (p1 - p0) / se
     p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
-# Calculate symmetric confidence interval around p1
+# Confidence Interval around p1
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
     margin_error <- z_critical * se
     ci_lower <- p1 - margin_error
@@ -65,7 +65,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     z <- ((p1 - p2) - 0) / se_diff
     p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
     
-# Calculate symmetric confidence interval around p1 - p2
+# Confidence Interval around p1 - p2
     z_critical <- qnorm(1 - (1 - conf.level) / 2)
     margin_error <- z_critical * se_diff
     ci_lower <- (p1 - p2) - margin_error
@@ -85,7 +85,7 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     stop("Invalid alternative hypothesis. Use 'two.sided', 'less', or 'greater'.")
   }
   
-  # Result summary
+# Results List
   result <- list(
     Z = z,
     P = p_value,
@@ -100,14 +100,58 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
 
 
 # Problem 2
+
+I have the csv dataset saved to my desktop. Loading it in: File > Import Dataset > From Text (base) > Heading "YES"
 ```{r}
 attach(KamilarandCooperData)
+kc <- KamilarandCooperData
+kc
 ```
+
+Using MaxLongevity_m and Brain_Size_Species_Mean
 
 Do the following for longevity~brain size and log(longevity)~log(brain size):  
 
--- Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text()).
--- ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
+1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
+```{r}
+# Referenced Module 12
+# Fitting the model for longevity~brain size
+lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
+summary (lb_model)
+
+# Scatterplot for longevity~brain size
+# Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
+library(ggplot2)
+p1 <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m, label=rownames(kc)))
+p1 <- p1 + geom_text(check_overlap=TRUE)
+p1 <- p1 + geom_smooth(method="lm", formula = y~x, col="green")
+p1
+```
+
+```{r}
+#Fitting the model for log(longevity)~log(brain size)
+# Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
+log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
+summary(log_lb_model)
+
+# Scatterplot for log(longevity)~log(brain size)
+p2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m), label=rownames(kc)))
+p2 <- p2 + geom_text(check_overlap=TRUE)
+p2 <- p2 + geom_smooth(method="lm", formula = y~x, col="red")
+p2
+```
+
+2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
+```{r}
+# For longevity~brain size
+slope_est1 <- coef(lb_model)[Brain_Size_Species_Mean]
+
+# For log(longevity)~log(brain size)
+slope_est2 <- coef(log_lb_model)[Brain_Size_Species_Mean]
+slope_est2
+```
+
+
 -- Also find a 90% CI for the slope (β1) parameter.
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
