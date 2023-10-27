@@ -124,7 +124,7 @@ Do the following for longevity~brain size and log(longevity)~log(brain size):
 # Referenced Module 12
 # Fitting the model for longevity~brain size
 lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
-summary (lb_model)
+print(lb_model)
 
 # Scatterplot of fitted model for longevity~brain size w/ fitted line 
 # Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
@@ -145,7 +145,7 @@ print(scatter_plot)
 ```{r}
 #Fitting the model for log(longevity)~log(brain size)
 log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
-summary(log_lb_model)
+print(log_lb_model)
 
 # Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
 scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
@@ -169,9 +169,19 @@ lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
 slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
 
 # Print the point estimate
-print(slope_estimatecat)
+print(slope_estimate)
 ```
 
+```{r}
+# Fit the model
+log_lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
+
+# Get the point estimate of the slope (β₁)
+slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
+
+# Print the point estimate
+print(slope_estimatecat)
+```
 
 -- Also find a 90% CI for the slope (β1) parameter.
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
