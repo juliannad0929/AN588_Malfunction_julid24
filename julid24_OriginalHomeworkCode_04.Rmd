@@ -106,8 +106,7 @@ print(test1)
 I have the csv dataset saved to my desktop. Loading it in: File > Import Dataset > From Text (base) > Heading "YES"
 ```{r}
 attach(KamilarandCooperData)
-kc <- KamilarandCooperData
-head(kc)
+kc <- (KamilarandCooperData)
 kc
 ```
 
@@ -164,6 +163,7 @@ print(scatter_plot2)
 ```{r}
 # Fit the model
 lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
+summary(lb_model)
 
 # Get the point estimate of the slope (β₁)
 slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
@@ -174,16 +174,22 @@ print(slope_estimate)
 
 ```{r}
 # Fit the model
-log_lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
+log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
+summary(log_lb_model)
 
 # Get the point estimate of the slope (β₁)
-slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
+slope_estimate2 <- coef(log_lb_model)[log(Brain_Size_Species_Mean)]
 
 # Print the point estimate
-print(slope_estimatecat)
+print(slope_estimate2)
 ```
 
 -- Also find a 90% CI for the slope (β1) parameter.
+```{r}
+confint(lb_model, level=0.90)
+confint(log_lb_model, level=0.90)
+```
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 -- Looking at your 2 models, which do you think is better? Why?
+
