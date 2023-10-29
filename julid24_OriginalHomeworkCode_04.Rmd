@@ -114,7 +114,7 @@ Using MaxLongevity_m and Brain_Size_Species_Mean
 
 Do the following for longevity~brain size and log(longevity)~log(brain size):  
 
-## Fitted Regression Model and Scatterplot
+## Part 1
 
 1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
 
@@ -158,7 +158,7 @@ scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m
 print(scatter_plot2)
 ```
 
-## Point estimate of the slope  
+## Part 2
 
 2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
 
@@ -190,6 +190,8 @@ confint(lb_model, level=0.90)
 confint(log_lb_model, level=0.90)
 ```
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
+
+
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 -- Looking at your 2 models, which do you think is better? Why?
 
