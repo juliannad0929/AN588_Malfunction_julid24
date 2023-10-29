@@ -105,9 +105,10 @@ print(test1)
 
 I have the csv dataset saved to my desktop. Loading it in: File > Import Dataset > From Text (base) > Heading "YES"
 ```{r}
-attach(KamilarandCooperData)
-kc <- (KamilarandCooperData)
-kc
+library(curl)
+HWdata <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
+kc <- read.csv(HWdata, header = TRUE, stringsAsFactors = FALSE)
+attach(kc)
 ```
 
 Using MaxLongevity_m and Brain_Size_Species_Mean
