@@ -164,6 +164,9 @@ print(scatter_plot2)
 
 ### Longevity~Brain Size
 ```{r}
+# Outcome of the test associated with the hypotheses
+summary(lb_model)
+
 # Get the point estimate of the slope (β₁)
 slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
 
@@ -173,8 +176,7 @@ print(slope_estimate) #Not sure why it comes up with a lot of NAs, but amongst t
 
 ### log(Longevity)~log(Brain Size)
 ```{r}
-# Fit the model
-log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
+# Outcome of the test associated with the hypotheses
 summary(log_lb_model)
 
 # Get the point estimate of the slope (β₁)
@@ -191,7 +193,16 @@ confint(log_lb_model, level=0.90)
 ```
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
 
+```{r}
+# Going to be honest, I was working on the first part of this HW code for so long that I'm out of brain power for this and I need to stop, and this HW is already due. Will read up on this more so I can have it done for the final HW code
+```
 
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+```{r}
+data <- data.frame(Brain_Size_Species_Mean=800)
+brainWt <- predict(lb_model, newdata=data, interval="prediction", level=0.90)
+brainWt
+```
+
 -- Looking at your 2 models, which do you think is better? Why?
 
