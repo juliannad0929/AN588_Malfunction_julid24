@@ -109,11 +109,12 @@ kc <- read.csv(HWdata, header = TRUE, stringsAsFactors = FALSE)
 attach(kc)
 ```
 
+
+## Part 1
+
 Using MaxLongevity_m and Brain_Size_Species_Mean
 
 Do the following for longevity~brain size and log(longevity)~log(brain size):  
-
-## Part 1
 
 1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
 
