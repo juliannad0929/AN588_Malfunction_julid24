@@ -1,0 +1,211 @@
+---
+title: "yangy22_PeerCommentary_julid24_04"
+author: "Julianna D."
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    theme: cerulean 
+    toc: yes
+    toc_float: true
+---
+EY: Both of your homework answers are very good! Sorry I couldn't make too many suggestions.
+
+# Problem 1 - Z-test function
+Write a simple R function, Z.prop.test(), that can perform one or two sample Z-tests for proportion data using the following guidelines:  
+-- p1 and n1 (no default) representing the estimated proportion and sample size  
+-- p2 and n2 (both defaulting to NULL) that contain a second sample's proportion and sample size data in the even of a two-sample test  
+-- pO (no default) as the expected value for the population proportion  
+-- alternative default "two.sided" and conf.level (default 0.95) used in the same way as in t.test()  
+-- A two-sample test: p1 is tested as being smaller or larger than p2 when alternative=“less” or alternative=“greater”  
+-- The function should perform a one-sample Z-test using p1, n1, and p0 if either p2 or n2 (or both) is NULL.  
+-- The function should contain a check for the rules of thumb we have talked about (n∗p>5
+ and n∗(1−p)>5) to ensure the validity of assuming the normal distribution in both the one- and two-sample settings. If this is violated, the function should still complete but it should also print an appropriate warning message.  
+-- The function should return a list containing the members Z (the test statistic), P (the appropriate p value), and CI (the two-sided CI with respect to “conf.level” around p1 in the case of a one-sample test and around p2-p1 in the case of a two-sample test). For all test alternatives (“two.sided”, “greater”, “less”), calculate symmetric CIs based on quantiles of the normal distribution rather than worrying about calculating single-limit confidence bounds.  
+
+```{r}
+Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
+  
+# Enter estimated proportion, sample size, and expected value for the population proportion 
+  if (missing(p1) || missing(n1) || missing(p0)) {
+    stop("You must provide values for p1, n1, and p0.")
+  } #'* EY:Good idea to add this *
+  
+# Rules of Thumb
+  if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {#'* EY: I think you want these to both be greater than 5*
+    warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")  
+  } 
+  
+  if (!is.null(p2) && !is.null(n2)) {
+    if (n2 * p2 < 5 || n2 * (1 - p2) < 5) {
+      warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied.")
+    }  #'* EY: I really like how you are using && vs ||. Your code is very easy to follow *
+  }
+  
+# One-sample test
+  if (is.null(p2) || is.null(n2)) {
+    se <- sqrt(p0 * (1 - p0) / n1)
+    z <- (p1 - p0) / se
+    pval <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    
+# Confidence Interval around p1
+    z_critical <- qnorm(1 - (1 - conf.level) / 2)
+    margin_error <- z_critical * se
+    ci_lower <- p1 - margin_error
+    ci_upper <- p1 + margin_error
+  }
+  
+# Two-sample test
+  if (!is.null(p2) && !is.null(n2)) {
+    se1 <- sqrt(p1 * (1 - p1) / n1)
+    se2 <- sqrt(p2 * (1 - p2) / n2)
+    se_diff <- sqrt(se1^2 + se2^2)
+    
+    z <- ((p1 - p2) - 0) / se_diff
+    pval <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    
+# Confidence Interval around p1 - p2
+    z_critical <- qnorm(1 - (1 - conf.level) / 2)
+    margin_error <- z_critical * se_diff
+    ci_lower <- (p1 - p2) - margin_error
+    ci_upper <- (p1 - p2) + margin_error
+  }
+  
+# Alternative hypothesis
+  if (alternative == "two.sided") {
+    alternative <- "two.sided"
+  } else if (alternative == "less") {
+    alternative <- "less"
+    pval <- pnorm(z)
+  } else if (alternative == "greater") {
+    alternative <- "greater"
+    pval <- 1 - pnorm(z)
+  } else {
+    stop("Invalid alternative hypothesis. Use 'two.sided', 'less', or 'greater'.")
+  }
+  
+# Results List
+  result <- list(
+    Z = z,
+    P = pval,
+    CI = c(ci_lower, ci_upper),
+    method = "Z-test for Proportions",
+    alternative = alternative
+  )
+  
+  return(result)
+}
+```
+
+```{r}
+# Test
+test1 <- Z.prop.test(p1=0.5, n1=100, p0=0.05)
+print(test1)
+```
+EY: Your code is very clean and I like being able to test it out at the end. It has definitly given me things I'd like to incorperate into my code. The annotations inside of the chunk makes it easy to follow along without needing them to all be separate chunks.
+
+# Problem 2 - Kalimar & Cooper Dataset
+```{r}
+library(curl)
+HWdata <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
+kc <- read.csv(HWdata, header = TRUE, stringsAsFactors = FALSE)
+attach(kc)
+```
+
+
+## Part 1
+
+Using MaxLongevity_m and Brain_Size_Species_Mean
+
+Do the following for longevity~brain size and log(longevity)~log(brain size):  
+
+1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
+
+### Longevity~Brain Size
+```{r}
+# Referenced Module 12
+# Fitting the model for longevity~brain size
+lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
+print(lb_model)
+
+# Scatterplot of fitted model for longevity~brain size w/ fitted line 
+# Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
+library(ggplot2)
+
+scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "green") +  # Add the fitted line
+  geom_text(aes(label = paste("y =", round(coef(lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(lb_model)[MaxLongevity_m], 3))),
+            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
+  labs(title = "longevity~brain size Scatterplot w/ Fitted Line",
+       x = "Brain_Size_Species_Mean",
+       y = "MaxLongevity_m")
+print(scatter_plot) #'* EY: I couldn't get geom_text to work. Did you look it up somewhere? I would also explain more about what each of the geom_text lines are supposed to do*
+```
+
+### log(Longevity)~log(Brain Size)
+```{r}
+#Fitting the model for log(longevity)~log(brain size)
+log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
+print(log_lb_model)
+
+# Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
+scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Add the fitted line
+  geom_text(aes(label = paste("y =", round(coef(log_lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(log_lb_model)[MaxLongevity_m], 3))),
+            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
+  labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
+       x = "log(Brain_Size_Species_Mean)",
+       y = "log(MaxLongevity_m)")
+print(scatter_plot2)
+```
+
+## Part 2
+
+2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
+
+### Longevity~Brain Size
+```{r}
+# Outcome of the test associated with the hypotheses
+summary(lb_model)
+
+# Get the point estimate of the slope (β₁)
+slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
+
+# Print the point estimate
+print(slope_estimate) #Not sure why it comes up with a lot of NAs, but amongst the NAs is the slope estimate. 
+#'* EY: Could it be because there are NAs in the data set that you need to remove first?*
+```
+
+### log(Longevity)~log(Brain Size)
+```{r}
+# Outcome of the test associated with the hypotheses
+summary(log_lb_model)
+
+# Get the point estimate of the slope (β₁)
+slope_estimate2 <- coef(log_lb_model)[log(Brain_Size_Species_Mean)]
+
+# Print the point estimate
+print(slope_estimate2) #Not sure why it comes up with a lot of NAs, but amongst the NAs is the slope estimate.
+```
+
+-- Also find a 90% CI for the slope (β1) parameter.
+```{r}
+confint(lb_model, level=0.90)
+confint(log_lb_model, level=0.90)
+```
+-- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
+
+```{r}
+# Going to be honest, I was working on the first part of this HW code for so long that I'm out of brain power for this and I need to stop, and this HW is already due. Will read up on this more so I can have it done for the final HW code
+```
+
+-- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+```{r}
+data <- data.frame(Brain_Size_Species_Mean=800)
+brainWt <- predict(lb_model, newdata=data, interval="prediction", level=0.90)
+brainWt
+```
+
+-- Looking at your 2 models, which do you think is better? Why?
+
