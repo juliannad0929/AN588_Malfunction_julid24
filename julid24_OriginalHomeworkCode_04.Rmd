@@ -158,20 +158,20 @@ scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m
 print(scatter_plot2)
 ```
 
+## Point estimate of the slope  
 
 2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
-```{r}
-# Fit the model
-lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
-summary(lb_model)
 
+### Longevity~Brain Size
+```{r}
 # Get the point estimate of the slope (β₁)
 slope_estimate <- coef(lb_model)[Brain_Size_Species_Mean]
 
 # Print the point estimate
-print(slope_estimate)
+print(slope_estimate) #Not sure why it comes up with a lot of NAs, but amongst the NAs is the slope estimate
 ```
 
+### log(Longevity)~log(Brain Size)
 ```{r}
 # Fit the model
 log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
@@ -181,7 +181,7 @@ summary(log_lb_model)
 slope_estimate2 <- coef(log_lb_model)[log(Brain_Size_Species_Mean)]
 
 # Print the point estimate
-print(slope_estimate2)
+print(slope_estimate2) #Not sure why it comes up with a lot of NAs, but amongst the NAs is the slope estimate.
 ```
 
 -- Also find a 90% CI for the slope (β1) parameter.
