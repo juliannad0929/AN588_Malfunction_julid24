@@ -166,10 +166,17 @@ print(scatter_plot2)
 ```{r}
 # Longevity~Brain Size
 summary(lb_model)
+```
 
+Based on the summary, the point estimate of the slope (β1) is 1.2180. This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis. 
+
+```{r}
 # log(Longevity)~log(Brain Size)
 summary(log_lb_model)
 ```
+
+
+Longevity~Brain Size
 
 ### Prediction Interval
 -- Also find a 90% prediction interval for the slope (β1) parameter.
