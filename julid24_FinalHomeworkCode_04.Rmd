@@ -175,11 +175,18 @@ Based on the summary, the point estimate of the slope (β1) is 1.2180. This does
 summary(log_lb_model)
 ```
 
+Based on the summary, the point estimate for the slope (β1) is 0.23415.This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
 
-Longevity~Brain Size
 
-### Prediction Interval
--- Also find a 90% prediction interval for the slope (β1) parameter.
+### Confidence and Prediction Interval
+
+-- Also find a 90% confidence interval for the slope (β1) parameter (question driectlyfrom Original HW question in the Assignment).
+```{r}
+confint(lb_model, level=0.90)
+confint(log_lb_model, level=0.90)
+```
+
+-- Also find a 90% prediction interval for the slope (β1) parameter (Prof. Schmitt asked for 90% PI during office hours on 10/30/23).
 ```{r}
 # Longevity~Brain Size
 pi <- predict(lb_model, newdata = data.frame(kc$Brain_Size_Species_Mean), interval = "prediction", level=0.90)
@@ -187,6 +194,7 @@ head(pi)
 ```
 
 ```{r}
+# log(Longevity)~log(Brain Size)
 pi2 <- predict(log_lb_model, newdata=data.frame(kc$Brain_Size_Species_Mean), interval="prediction", level=0.90)
 head(pi2)
 ```
@@ -194,12 +202,23 @@ head(pi2)
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
 
 ```{r}
+x 
+```
+
+```{r}
 # Going to be honest, I was working on the first part of this HW code for so long that I'm out of brain power for this and I need to stop, and this HW is already due. Will read up on this more so I can have it done for the final HW code
 ```
 
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 ```{r}
-# see notebook notes
+# Longevity~Brain Size
+pi_1 <- predict(lb_model, newdata=data.frame(Brain_Size_Species_Mean=800), interval="predict", level=0.90)
+print(pi_1)
+```
+
+```{r}
+pi_2 <- predict(log_lb_model, newdata=data.frame(Brain_Size_Species_Mean=800), interval="predict", level=0.90)
+print(pi_2)
 ```
 
 -- Looking at your 2 models, which do you think is better? Why?
