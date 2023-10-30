@@ -168,19 +168,19 @@ print(scatter_plot2)
 summary(lb_model)
 ```
 
-Based on the summary, the point estimate of the slope (β1) is 1.2180. This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis. 
+Interpretation - Based on the summary, the point estimate of the slope (β1) is 1.2180. This does not match our hypothesis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis. 
 
 ```{r}
 # log(Longevity)~log(Brain Size)
 summary(log_lb_model)
 ```
 
-Based on the summary, the point estimate for the slope (β1) is 0.23415.This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
+Interpretation - Based on the summary, the point estimate for the slope (β1) is 0.23415.This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
 
 
 ### Confidence and Prediction Interval
 
--- Also find a 90% confidence interval for the slope (β1) parameter (question driectlyfrom Original HW question in the Assignment).
+-- Also find a 90% confidence interval for the slope (β1) parameter (question driectly from Original HW question in the Assignment).
 ```{r}
 confint(lb_model, level=0.90)
 confint(log_lb_model, level=0.90)
@@ -200,11 +200,6 @@ head(pi2)
 ```
 
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
-
-```{r}
-x 
-```
-
 ```{r}
 # Going to be honest, I was working on the first part of this HW code for so long that I'm out of brain power for this and I need to stop, and this HW is already due. Will read up on this more so I can have it done for the final HW code
 ```
