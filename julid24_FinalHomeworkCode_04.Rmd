@@ -123,12 +123,12 @@ library(ggplot2)
 
 scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE, color = "green") +  
+  geom_smooth(method = "lm", formula=y~x, color = "purple") +  
   geom_text(aes(label = paste("y =", round(coef(lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(lb_model)[MaxLongevity_m], 3))),
             x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
   labs(title = "longevity~brain size Scatterplot w/ Fitted Line",
        x = "Brain_Size_Species_Mean",
-       y = "MaxLongevity_m")
+       y = "MaxLongevity_m") + geom_text(aes(x=100, y=750, label=("y = 248.95 + 1.2180")), size=4, color="purple")
 print(scatter_plot)
 ```
 
@@ -141,12 +141,12 @@ print(log_lb_model)
 # Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
 scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
   geom_point() +
-  geom_smooth(method = "lm", se = FALSE, color = "orange") +  # Add the fitted line
+  geom_smooth(method = "lm", formula = y~x, color = "orange") +
   geom_text(aes(label = paste("y =", round(coef(log_lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(log_lb_model)[MaxLongevity_m], 3))),
             x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
   labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
        x = "log(Brain_Size_Species_Mean)",
-       y = "log(MaxLongevity_m)")
+       y = "log(MaxLongevity_m)") + geom_text(aes(x=1.5, y=6, label=("y = 4.88 + 0.23")), size=4, color="orange")
 print(scatter_plot2)
 ```
 
