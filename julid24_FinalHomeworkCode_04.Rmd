@@ -192,7 +192,10 @@ pi2 <- predict(log_lb_model, level=0.90)
 head(pi2)
 ```
 
--- add lines for the 90% confidence and prediction interval bands on the plot & add a legend.
+-- add lines for the 90% confidence and prediction interval bands on the plot & add a legend. 
+
+(I can't figure out how to add the PI bands or a legend)
+
 ```{r}
 # Longevity~Brain Size
 scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
@@ -203,6 +206,7 @@ scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
   labs(title = "longevity~brain size Scatterplot w/ Fitted Line",
        x = "Brain_Size_Species_Mean",
        y = "MaxLongevity_m") + geom_text(aes(x=100, y=750, label=("y = 248.95 + 1.2180")), size=4, color="purple") + geom_abline(intercept=230.54, slope=1.04, color="red") + geom_abline(intercept=267.36, slope=1.40, color="red")
+
 print(scatter_plot)
 ```
 
@@ -216,8 +220,10 @@ scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m
   labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
        x = "log(Brain_Size_Species_Mean)",
        y = "log(MaxLongevity_m)") + geom_text(aes(x=1.5, y=6, label=("y = 4.88 + 0.23")), size=4, color="orange") + geom_abline(intercept=4.76, slope=0.20, color="blue") + geom_abline(intercept=4.99, slope=0.26, color="blue")
+
 print(scatter_plot2)
 ```
+
 
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
 ```{r}
