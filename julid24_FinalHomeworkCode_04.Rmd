@@ -22,12 +22,13 @@ Write a simple R function, Z.prop.test(), that can perform one or two sample Z-t
 
 ```{r}
 Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sided", conf.level = 0.95) {
-  # Check for required arguments
+
+# Enter estimated proportion, sample size, and expected value for population proportion
   if (missing(p1) || missing(n1) || missing(p0)) {
     stop("You must provide values for p1, n1, and p0.")
   }
   
-  # Check for the rules of thumb
+# Rules of thumb
   if (n1 * p1 < 5 || n1 * (1 - p1) < 5) {
     warning("The rules of thumb (n*p > 5 and n*(1-p) > 5) may not be satisfied for the first sample.")
   }
@@ -38,51 +39,51 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
     }
   }
   
-  # Calculate point estimates using the p-hat formula
-  p_hat1 <- p1
+# For proportions, we calculate point estimates using the p-hat formula
+  phat1 <- p1
   se1 <- sqrt(p1 * (1 - p1) / n1)
   
   if (!is.null(p2) && !is.null(n2)) {
-    p_hat2 <- p2
+    phat2 <- p2
     se2 <- sqrt(p2 * (1 - p2) / n2)
     se_diff <- sqrt(se1^2 / n1 + se2^2 / n2)
   }
   
-  # Calculate test statistic
+# Test statistic
   if (is.null(p2) || is.null(n2)) {
-    z <- (p_hat1 - p0) / se1
+    z <- (phat1 - p0) / se1
   } else {
-    z <- (p_hat1 - p_hat2) / se_diff
+    z <- (phat1 - phat2) / se_diff
   }
   
-  # Calculate p-value based on the specified alternative
+# Calculate p-value 
   if (alternative == "two.sided") {
-    p_value <- 2 * pnorm(abs(z), lower.tail = FALSE)
+    pval <- 2 * pnorm(abs(z), lower.tail = FALSE)
   } else if (alternative == "greater") {
-    p_value <- 1 - pnorm(z)
+    pval <- 1 - pnorm(z)
   } else if (alternative == "less") {
-    p_value <- pnorm(z)
+    pval <- pnorm(z)
   } else {
     stop("Invalid alternative hypothesis. Use 'two.sided', 'less', or 'greater'.")
   }
   
-  # Calculate symmetric confidence interval
+# Find Confidence Interval
   alpha <- 1 - conf.level
-  z_critical <- qnorm(1 - alpha / 2)
-  margin_error <- z_critical * se_diff
+  z_crit <- qnorm(1 - alpha / 2)
+  marg_error <- z_crit * se_diff
   
   if (is.null(p2) || is.null(n2)) {
-    ci_lower <- p1 - margin_error
-    ci_upper <- p1 + margin_error
+    ci_lower <- p1 - marg_error
+    ci_upper <- p1 + marg_error
   } else {
-    ci_lower <- (p1 - p2) - margin_error
-    ci_upper <- (p1 - p2) + margin_error
+    ci_lower <- (p1 - p2) - marg_error
+    ci_upper <- (p1 - p2) + marg_error
   }
   
-  # Result summary
+# Results List
   result <- list(
     Z = z,
-    P = p_value,
+    P = pval,
     CI = c(ci_lower, ci_upper),
     method = "Z-test for Proportions",
     alternative = alternative
@@ -91,19 +92,6 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
   return(result)
 }
 ```
-
-```{r}
-# Test
-# Example usage:
-# One-sample Z-test
-# result1 <- Z.prop.test(p1 = 0.6, n1 = 100, p0 = 0.5)
-# print(result1)
-
-# Two-sample Z-test
-# result2 <- Z.prop.test(p1 = 0.6, n1 = 100, p2 = 0.55, n2 = 120, p0 = 0.5, alternative = "greater")
-# print(result2)
-```
-
 
 # Problem 2 - Kalimar & Cooper Dataset
 ```{r}
