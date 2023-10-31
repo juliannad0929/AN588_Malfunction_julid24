@@ -94,6 +94,16 @@ Z.prop.test <- function(p1, n1, p2 = NULL, n2 = NULL, p0, alternative = "two.sid
 ```
 
 # Problem 2 - Kalimar & Cooper Dataset
+
+Using MaxLongevity_m and Brain_Size_Species_Mean, do the following for longevity~brain size and log(longevity)~log(brain size):  
+-- Fit the regression model and, using {ggplot2}, produce a scatterplot with the fitted line superimposed upon the data. Append the the fitted model equation to your plot (HINT: use the function geom_text()).
+
+-- Identify and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypotheses H0: β1 = 0; HA: β1 ≠ 0. Also, find a 90 percent CI for the slope (β1) parameter.
+
+-- Using your model, add lines for the 90 percent confidence and prediction interval bands on the plot and add a legend to differentiate between the lines.
+
+-- Produce a point estimate and associated 90 percent PI for the longevity of a species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+
 ```{r}
 library(curl)
 HWdata <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN588_Fall23/KamilarAndCooperData.csv")
@@ -102,25 +112,21 @@ attach(kc)
 ```
 
 
-## Part 1
+## Longevity~Brain Size
 
-Using MaxLongevity_m and Brain_Size_Species_Mean
-
-Do the following for longevity~brain size and log(longevity)~log(brain size):  
+### Fit the Model
 
 1. Fit the regression model and produce a {ggplot2} scatterplot with the fitted line superimposed upon the data. Append the fitted model equation to your plot (HINT: use geom_text().
-
-### Longevity~Brain Size
 ```{r}
 # Referenced Module 12
 # Fitting the model for longevity~brain size
 lb_model <- lm(MaxLongevity_m~Brain_Size_Species_Mean, data=kc)
 print(lb_model)
 
-# Scatterplot of fitted model for longevity~brain size w/ fitted line 
 # Referenced: https://ggplot2.tidyverse.org/reference/geom_text.html 
 library(ggplot2)
 
+# Scatterplot of fitted model for longevity~brain size w/ fitted line 
 scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
   geom_point() +
   geom_smooth(method = "lm", formula=y~x, color = "purple") +  
@@ -129,46 +135,20 @@ scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
   labs(title = "longevity~brain size Scatterplot w/ Fitted Line",
        x = "Brain_Size_Species_Mean",
        y = "MaxLongevity_m") + geom_text(aes(x=100, y=750, label=("y = 248.95 + 1.2180")), size=4, color="purple")
+
 print(scatter_plot)
 ```
 
-### log(Longevity)~log(Brain Size)
-```{r}
-#Fitting the model for log(longevity)~log(brain size)
-log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
-print(log_lb_model)
-
-# Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
-scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
-  geom_point() +
-  geom_smooth(method = "lm", formula = y~x, color = "orange") +
-  geom_text(aes(label = paste("y =", round(coef(log_lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(log_lb_model)[MaxLongevity_m], 3))),
-            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
-  labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
-       x = "log(Brain_Size_Species_Mean)",
-       y = "log(MaxLongevity_m)") + geom_text(aes(x=1.5, y=6, label=("y = 4.88 + 0.23")), size=4, color="orange")
-print(scatter_plot2)
-```
-
-## Part 2
-
-2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
 
 ### Slope Estimate (beta 1)
+
+2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
 ```{r}
 # Longevity~Brain Size
 summary(lb_model)
 ```
 
-Interpretation - Based on the summary, the point estimate of the slope (β1) is 1.2180. This does not match our hypothesis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis. 
-
-```{r}
-# log(Longevity)~log(Brain Size)
-summary(log_lb_model)
-```
-
-Interpretation - Based on the summary, the point estimate for the slope (β1) is 0.23415.This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
-
+Interpretation - Based on the summary, the point estimate of the slope (β1) is 1.2180. This does not match our hypothesis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
 
 ### Confidence and Prediction Interval
 
@@ -177,9 +157,6 @@ Interpretation - Based on the summary, the point estimate for the slope (β1) is
 # Longevity~Brain Size
 ci <- confint(lb_model, level=0.90)
 ci
-# log(Longevity)~log(Brain Size)
-ci2 <- confint(log_lb_model, level=0.90)
-ci2
 ```
 
 -- Also find a 90% prediction interval for the slope (β1) parameter (Prof. Schmitt asked for 90% PI during office hours on 10/30/23).
@@ -187,10 +164,9 @@ ci2
 # Longevity~Brain Size
 pi <- predict(lb_model, level=0.90)
 head(pi)
-# log(Longevity)~log(Brain Size)
-pi2 <- predict(log_lb_model, level=0.90)
-head(pi2)
 ```
+
+### Add CI and PI lines to Plot
 
 -- add lines for the 90% confidence and prediction interval bands on the plot & add a legend. 
 
@@ -210,6 +186,70 @@ scatter_plot <- ggplot(kc, aes(Brain_Size_Species_Mean, MaxLongevity_m)) +
 print(scatter_plot)
 ```
 
+### Pt. Est. 800gm Brain Wt
+
+-- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
+```{r}
+# Longevity~Brain Size
+pi_1 <- predict(lb_model, newdata=data.frame(Brain_Size_Species_Mean=800), interval="predict", level=0.90)
+print(pi_1)
+```
+I do not trust this model to predict observations for this value because the data does not follow a normal distribution, skewing the estimation.
+
+
+## log(Longevity)~log(Brain Size)
+
+### Fit the Model
+```{r}
+#Fitting the model for log(longevity)~log(brain size)
+log_lb_model <- lm(log(MaxLongevity_m)~log(Brain_Size_Species_Mean), data=kc)
+print(log_lb_model)
+
+# Scatterplot of fitted model for log(longevity)~log(brain size) w/ fitted line 
+scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y~x, color = "orange") +
+  geom_text(aes(label = paste("y =", round(coef(log_lb_model)[Brain_Size_Species_Mean], 3), "x +", round(coef(log_lb_model)[MaxLongevity_m], 3))),
+            x = min(kc$Brain_Size_Species_Mean) + 1, y = max(kc$MaxLongevity_m) - 1, hjust = 0, vjust = 1, size = 5) +
+  labs(title = "log(longevity)~log(brain size) Scatterplot w/ Fitted Line",
+       x = "log(Brain_Size_Species_Mean)",
+       y = "log(MaxLongevity_m)") + geom_text(aes(x=1.5, y=6, label=("y = 4.88 + 0.23")), size=4, color="orange")
+
+print(scatter_plot2)
+```
+
+2. ID and interpret the point estimate of the slope (β1), as well as the outcome of the test associated with the hypothesis H-: β1=0; HA: β1≠0.
+
+### Slope Estimate (beta 1)
+```{r}
+# log(Longevity)~log(Brain Size)
+summary(log_lb_model)
+```
+
+Interpretation - Based on the summary, the point estimate for the slope (β1) is 0.23415.This does not match our hypotehsis H-: β1=0, and therefore satisfies our alternative hypothesis, HA: β1≠0. The outcome is that we reject the null hypothesis.
+
+
+### Confidence and Prediction Interval
+
+-- Also find a 90% confidence interval for the slope (β1) parameter (question driectly from Original HW question in the Assignment).
+```{r}
+# log(Longevity)~log(Brain Size)
+ci2 <- confint(log_lb_model, level=0.90)
+ci2
+```
+
+-- Also find a 90% prediction interval for the slope (β1) parameter (Prof. Schmitt asked for 90% PI during office hours on 10/30/23).
+```{r}
+# log(Longevity)~log(Brain Size)
+pi2 <- predict(log_lb_model, level=0.90)
+head(pi2)
+```
+
+### Add CI and PI lines to Plot
+-- add lines for the 90% confidence and prediction interval bands on the plot & add a legend. 
+
+(I can't figure out how to add the PI bands or a legend)
+
 ```{r}
 # log(longevity)~log(brain size)
 scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m))) +
@@ -224,18 +264,18 @@ scatter_plot2 <- ggplot(kc, aes(log(Brain_Size_Species_Mean), log(MaxLongevity_m
 print(scatter_plot2)
 ```
 
+### Pt. Est. 800gm Brain Wt
 
 -- Produce a point estimate and associated 90% PI for the longevity of species whose brain weight is 800 gm. Do you trust the model to predict observations accurately for this value of the explanatory variable? Why or why not?
-```{r}
-# Longevity~Brain Size
-pi_1 <- predict(lb_model, newdata=data.frame(Brain_Size_Species_Mean=800), interval="predict", level=0.90)
-print(pi_1)
-```
 
 ```{r}
 pi_2 <- predict(log_lb_model, newdata=data.frame(Brain_Size_Species_Mean=800), interval="predict", level=0.90)
 print(pi_2)
 ```
+I do trust this model to predict observations for this value because it has a more normal distribution and therefore can better estimation. 
 
--- Looking at your 2 models, which do you think is better? Why?
+## Comparing the 2 models
 
+Looking at your 2 models, which do you think is better? Why?
+
+I think the log model is better because it takes skewed data and reshapes it into a more normal distribution, reducing the range of the data and more centrality. Using this model helps give better predictions and estimates for theoretical values, such as estimating the longevity of a species with a theoretical 800gm brain weight.
